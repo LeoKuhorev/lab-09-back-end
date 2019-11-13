@@ -1,8 +1,8 @@
 # City Explorer Backend
 
-**Author**: Leo Kuhorev and Tammy Ip
+**Author**: Leo Kuhorev, Noah Rhodes, Ehsan Ghafari, Tammy Ip
 
-**Version**: 0.1
+**Version**: 1.4
 
 ## Overview
 The goal of this project is to build out the backend to a frontend application called City Explorer. 
@@ -14,45 +14,38 @@ Get the frontend of City Explorer [here](https://leokuhorev.github.io/city-explo
 This backend has been develeoped using Javascript with the following dependencies, on the node.js framework:
 "cors": "^2.8.5",
 "dotenv": "^8.2.0",
-"express": "^4.17.1"
+"express": "^4.17.1",
+"pg": "^7.12.1",
+"superagent": "^5.1.0"
 
-It has been deployed to http://cf301-city-explorer.herokuapp.com/.
+It has been deployed to https://cf301-city-explorer.herokuapp.com/.
 
 ## Change Log
-11-09-2019 855 pm - Application works with Geo, Weather and Trail hike APIs.
+11-03-2019 - Application created and comnected to data.JSON.
+11-09-2019 - Application works with Geo, Weather and Trail hike APIs.
+11-11-2019 - SQL database added for Geo, Weather and Events.
+11-14-2019 - 
 
 
 ## Time Estimate
 
-Number and name of feature: *Repository Set Up*
-Estimate of time needed to complete: 20 min
-Start time: 1:00 PM
-Finish time: 1:20 PM
-Actual time needed to complete: 20 min
+Number and name of feature: Add Movies API
+Estimate of time needed to complete: _____
+Start time: _____
+Finish time: _____
+Actual time needed to complete: _____
 
-Number and name of feature: *Code Review*
-Estimate of time needed to complete: 20 min
-Start time: 1:30 PM
-Finish time: 1:50 PM
-Actual time needed to complete: 20 min
+Number and name of feature: Add Yelp API
+Estimate of time needed to complete: _____
+Start time: _____
+Finish time: _____
+Actual time needed to complete: _____
 
-Number and name of feature: *Heroku Deployment*
-Estimate of time needed to complete: 20 min
-Start time: 2:00 PM
-Finish time: 2:10 PM
-Actual time needed to complete: 10 min
-
-Number and name of feature: *Data formatting*
-Estimate of time needed to complete: 20 min
-Start time: 2:10 PM
-Finish time: 2:30 PM
-Actual time needed to complete: 20 min
-
-Number and name of feature: *Check Location Feature*
-Estimate of time needed to complete: 1 hour
-Start time: 2:30 PM
-Finish time: 6:30 PM
-Actual time needed to complete: 4 hours
+Number and name of feature: Modularize your code
+Estimate of time needed to complete: _____
+Start time: _____
+Finish time: _____
+Actual time needed to complete: _____
 
 
 ## Credits and Collaborations

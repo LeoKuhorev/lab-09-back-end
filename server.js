@@ -69,7 +69,7 @@ function Trail(object) {
   this.condition_time = object.conditionDate.slice(11);
 }
 
-
+// Send a SQL request
 async function checkDB(SQL, city, minutesToExpire) {
   try {
     const query = await client.query(SQL, [city]);
