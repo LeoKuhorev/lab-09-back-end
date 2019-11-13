@@ -6,21 +6,25 @@ require('dotenv').config();
 // Declare Application Dependencies
 const express = require('express');
 const cors = require('cors');
-const superagent = require('superagent');
 const path = require('path');
 
 // Bringing in modules
 const SQL = require(path.join(__dirname, 'modules', 'functions.js'));
-const checkLocation = SQL.checkLocation;
+
 const checkWeather = SQL.checkWeather;
-const checkEvent = SQL.checkEvent;
-const saveLocations = SQL.saveLocations;
 const saveWeather = SQL.saveWeather;
-const saveEvents = SQL.saveEvents;
 const clearWeather = SQL.clearWeather;
+
+const checkEvent = SQL.checkEvent;
+const saveEvents = SQL.saveEvents;
 const clearEvent = SQL.clearEvent;
 
+const fetchAPI = SQL.fetchAPI;
+
+
 const Location = require(path.join(__dirname, 'modules', 'location.js'));
+const locationHandler = Location.locationHandler;
+
 const Event = require(path.join(__dirname, 'modules', 'events.js'));
 const Weather = require(path.join(__dirname, 'modules', 'weather.js'));
 const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
@@ -50,32 +54,7 @@ app.get('*', (req, res) => {
 
 // Helper functions
 
-// Fetch any API data
-async function fetchAPI(url) {
-  try {
-    const apiData = await superagent.get(url);
-    return apiData.body;
-  } catch (error) {
-    console.log('API call couldn\'t be completed, error status:', error.status);
-  }
-}
-
 // Event Handlers
-async function locationHandler(req, res) {
-  const city = req.query.data;
-  try {
-    let cacheFound = await checkLocation(city, res);
-    if(!cacheFound) {
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=${process.env.GEOCODE_API_KEY}`;
-      const geoData = await fetchAPI(url);
-      const location = new Location(city, geoData);
-      saveLocations(location);
-      res.status(200).send(location);
-    }
-  } catch (error) {
-    errorHandler('Sorry, something went wrong', req, res);
-  }
-}
 
 async function weatherHandler(req, res) {
   try {

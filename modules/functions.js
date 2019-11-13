@@ -1,5 +1,7 @@
 'use strict';
 
+const superagent = require('superagent');
+
 // Database connection
 const pg = require('pg');
 const client = new pg.Client(process.env.DATABASE_URL);
@@ -110,4 +112,14 @@ exports.clearEvent = async function clearEvent(city) {
   console.log('deleteing rows for ', city);
   let SQL = 'DELETE FROM events WHERE location_id = (SELECT id FROM locations WHERE search_query LIKE $1)';
   await client.query(SQL, [city]);
+};
+
+// Fetch any API data
+exports.fetchAPI = async function fetchAPI(url) {
+  try {
+    const apiData = await superagent.get(url);
+    return apiData.body;
+  } catch (error) {
+    console.log('API call couldn\'t be completed, error status:', error.status);
+  }
 };

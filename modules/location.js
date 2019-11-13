@@ -1,12 +1,31 @@
 'use strict';
 
-class Location {
-  constructor(city, geoData) {
-    this.search_query = city;
-    this.formatted_query = geoData.results[0].formatted_address;
-    this.latitude = geoData.results[0].geometry.location.lat;
-    this.longitude = geoData.results[0].geometry.location.lng;
-  }
+const path = require('path');
+const SQL = require(path.join(__dirname, 'functions.js'));
+const checkLocation = SQL.checkLocation;
+const saveLocations = SQL.saveLocations;
+const fetchAPI = SQL.fetchAPI;
+
+function Location(city, geoData) {
+  this.search_query = city;
+  this.formatted_query = geoData.results[0].formatted_address;
+  this.latitude = geoData.results[0].geometry.location.lat;
+  this.longitude = geoData.results[0].geometry.location.lng;
 }
 
-module.exports = Location;
+
+exports.locationHandler = async function locationHandler(req, res) {
+  const city = req.query.data;
+  try {
+    let cacheFound = await checkLocation(city, res);
+    if(!cacheFound) {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=${process.env.GEOCODE_API_KEY}`;
+      const geoData = await fetchAPI(url);
+      const location = new Location(city, geoData);
+      saveLocations(location);
+      res.status(200).send(location);
+    }
+  } catch (error) {
+    console.log('Sorry, something went wrong', req, res);
+  }
+};
