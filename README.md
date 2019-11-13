@@ -22,30 +22,49 @@ It has been deployed to https://cf301-city-explorer.herokuapp.com/.
 
 ## Change Log
 11-03-2019 - Application created and comnected to data.JSON.
+
 11-09-2019 - Application works with Geo, Weather and Trail hike APIs.
+
 11-11-2019 - SQL database added for Geo, Weather and Events.
+
 11-14-2019 - 
+
 
 
 ## Time Estimate
 
 Number and name of feature: Add Movies API
+
 Estimate of time needed to complete: _____
+
 Start time: _____
+
 Finish time: _____
+
 Actual time needed to complete: _____
+
 
 Number and name of feature: Add Yelp API
+
 Estimate of time needed to complete: _____
+
 Start time: _____
+
 Finish time: _____
+
 Actual time needed to complete: _____
 
+
 Number and name of feature: Modularize your code
+
 Estimate of time needed to complete: _____
+
 Start time: _____
+
 Finish time: _____
+
 Actual time needed to complete: _____
+
 
 
 ## Credits and Collaborations
