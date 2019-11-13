@@ -9,6 +9,22 @@ const cors = require('cors');
 const superagent = require('superagent');
 const path = require('path');
 
+// Bringing in modules
+const SQL = require(path.join(__dirname, 'modules', 'functions.js'));
+const checkLocation = SQL.checkLocation;
+const checkWeather = SQL.checkWeather;
+const checkEvent = SQL.checkEvent;
+const saveLocations = SQL.saveLocations;
+const saveWeather = SQL.saveWeather;
+const saveEvents = SQL.saveEvents;
+const clearWeather = SQL.clearWeather;
+const clearEvent = SQL.clearEvent;
+
+const Location = require(path.join(__dirname, 'modules', 'location.js'));
+const Event = require(path.join(__dirname, 'modules', 'events.js'));
+const Weather = require(path.join(__dirname, 'modules', 'weather.js'));
+const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
+
 // Database connection
 const pg = require('pg');
 const client = new pg.Client(process.env.DATABASE_URL);
@@ -33,149 +49,6 @@ app.get('*', (req, res) => {
 });
 
 // Helper functions
-// Location constructor
-function Location(city, geoData) {
-  this.search_query = city;
-  this.formatted_query = geoData.results[0].formatted_address;
-  this.latitude = geoData.results[0].geometry.location.lat;
-  this.longitude = geoData.results[0].geometry.location.lng;
-}
-
-// Weather constructor
-function Weather(day) {
-  this.forecast = day.summary;
-  this.time = new Date(day.time * 1000).toString().slice(0, 15);
-}
-
-// Event constructor
-function Event(object) {
-  this.link = object.url;
-  this.name = object.name.text;
-  this.event_date = object.start.local.slice(0, 10);
-  this.summary = object.summary;
-}
-
-// Trail constructor
-function Trail(object) {
-  this.name = object.name;
-  this.location = object.location;
-  this.length = object.length;
-  this.stars = object.stars;
-  this.star_votes = object.starVotes;
-  this.summary = object.summary;
-  this.trail_url = object.url;
-  this.conditions = object.conditionStatus;
-  this.condition_date = object.conditionDate.slice(0, 10);
-  this.condition_time = object.conditionDate.slice(11);
-}
-
-// Send a SQL request
-async function checkDB(SQL, city, minutesToExpire) {
-  try {
-    const query = await client.query(SQL, [city]);
-    if(query.rowCount) {
-      console.log(`${city} found in database`);
-      if(minutesToExpire) {
-        var timeDifference = (Date.now() - query.rows[0].time_saved) / 60000;
-        console.log(`The result for ${city} was saved ${timeDifference.toFixed(2)} minutes ago`);
-      }
-      if(!minutesToExpire || timeDifference < minutesToExpire) {
-        return query.rows;
-      }
-    }
-  } catch (error) {
-    console.log('Sorry, something went wrong', error);
-  }
-}
-
-// Getting location from database
-async function checkLocation(city, res) {
-  const SQL = 'SELECT * FROM locations WHERE search_query = $1';
-  try {
-    const location = await checkDB(SQL, city);
-    if(location) {
-      res.status(200).send(location[0]);
-      return true;
-    }
-  } catch (error) {
-    console.log('Sorry, something went wrong', error);
-  }
-}
-
-async function checkWeather(city, res) {
-  const SQL = 'SELECT forecast, time, time_saved FROM weather JOIN locations ON weather.location_id = locations.id WHERE locations.search_query = $1';
-  try {
-    const weather = await checkDB(SQL, city, 60);
-    if(weather) {
-      res.status(200).send(weather);
-      return true;
-    }
-  } catch (error) {
-    console.log('Sorry, something went wrong', error);
-  }
-}
-
-async function checkEvent(city, res) {
-  const SQL = 'SELECT link, name, event_date, summary, time_saved FROM events JOIN locations ON events.location_id = locations.id WHERE locations.search_query = $1';
-  try {
-    const event = await checkDB(SQL, city, (60 * 24));
-    if(event) {
-      res.status(200).send(event);
-      return true;
-    }
-  } catch (error) {
-    console.log('Sorry, something went wrong', error);
-  }
-}
-
-// Saving location into database
-async function saveLocations(object) {
-  let SQL = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id';
-  let safeValues = [object.search_query, object.formatted_query, object.latitude, object.longitude];
-  try {
-    await client.query(SQL, safeValues);
-    console.log(`Location ${object.search_query} saved into database`);
-    console.table(object);
-  } catch (error) {
-    console.log('Sorry, something went wrong', error);
-  }
-}
-
-async function saveWeather(forecast, city) {
-  let SQL = 'INSERT INTO weather (forecast, time, time_saved, location_id) VALUES ($1, $2, $3, (SELECT id FROM locations WHERE search_query LIKE $4))';
-  let timeSaved = Date.now();
-  let safeValues = [forecast.forecast, forecast.time, timeSaved, city];
-  try {
-    await client.query(SQL, safeValues);
-    console.log('Saving weather for', city);
-  } catch (error) {
-    console.log('Weather couldn\'t be saved', error);
-  }
-}
-
-async function saveEvents(event, city) {
-  let SQL = 'INSERT INTO events (link, name, event_date, summary, time_saved, location_id) VALUES ($1, $2, $3, $4, $5, (SELECT id FROM locations WHERE search_query LIKE $6))';
-  let timeSaved = Date.now();
-  let safeValues = [event.link, event.name, event.event_date, event.summary, timeSaved, city];
-  try {
-    await client.query(SQL, safeValues);
-    console.log('Saving event for', city);
-  } catch (error) {
-    console.log('Event couldn\'t be saved', error);
-  }
-}
-
-async function clearWeather(city) {
-  console.log('deleteing rows for ', city);
-  let SQL = 'DELETE FROM weather WHERE location_id = (SELECT id FROM locations WHERE search_query LIKE $1)';
-  await client.query(SQL, [city]);
-}
-
-async function clearEvent(city) {
-  console.log('deleteing rows for ', city);
-  let SQL = 'DELETE FROM events WHERE location_id = (SELECT id FROM locations WHERE search_query LIKE $1)';
-  await client.query(SQL, [city]);
-}
 
 // Fetch any API data
 async function fetchAPI(url) {
@@ -262,8 +135,5 @@ function errorHandler(error, req, res) {
 }
 
 // Ensure that the server is listening for requests
-client.connect()
-  .then(() => {
-    app.listen(PORT, () => console.log(`The server is up listening on ${PORT}`));
-  })
-  .catch(error => console.log('cannot connect to database', error));
+app.listen(PORT, () => console.log(`The server is up listening on ${PORT}`));
+
