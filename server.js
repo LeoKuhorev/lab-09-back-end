@@ -11,10 +11,6 @@ const path = require('path');
 // Bringing in modules
 const helperFunctions = require(path.join(__dirname, 'modules', 'functions.js'));
 
-const checkEvent = helperFunctions.checkEvent;
-const saveEvents = helperFunctions.saveEvents;
-const clearEvent = helperFunctions.clearEvent;
-
 const fetchAPI = helperFunctions.fetchAPI;
 const dbHandler = helperFunctions.dbHandler;
 
@@ -25,6 +21,8 @@ const Weather = require(path.join(__dirname, 'modules', 'weather.js'));
 const weatherHandler = Weather.weatherHandler;
 
 const Event = require(path.join(__dirname, 'modules', 'events.js'));
+const eventsHandler = Event.eventsHandler;
+
 const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
 
 // Application setup
@@ -54,23 +52,6 @@ async function trailHandler(req, res) {
     const trailBody = await fetchAPI(url);
     const trailData = trailBody.trails.map(element => new Trail(element));
     res.status(200).send(trailData);
-  }
-  catch (error) {
-    errorHandler('Sorry, something went wrong', req, res);
-  }
-}
-
-async function eventsHandler(req, res) {
-  try {
-    let eventFound = await checkEvent(req.query.data.search_query, res);
-    if(!eventFound) {
-      const url = `https://www.eventbriteapi.com/v3/events/search/?location.longitude=${req.query.data.longitude}&location.latitude=${req.query.data.latitude}&expand=venue&token=${process.env.EVENTBRITE_API_KEY}`;
-      const eventsData = await fetchAPI(url);
-      await clearEvent(req.query.data.search_query);
-      const events = eventsData.events.map(element => new Event(element));
-      events.forEach(event => saveEvents(event, req.query.data.search_query));
-      res.status(200).send(events);
-    }
   }
   catch (error) {
     errorHandler('Sorry, something went wrong', req, res);
