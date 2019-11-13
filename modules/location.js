@@ -1,10 +1,10 @@
 'use strict';
 
 const path = require('path');
-const SQL = require(path.join(__dirname, 'functions.js'));
-const checkLocation = SQL.checkLocation;
-const saveLocations = SQL.saveLocations;
-const fetchAPI = SQL.fetchAPI;
+const helperFunctions = require(path.join(__dirname, 'functions.js'));
+const checkLocation = helperFunctions.checkLocation;
+const saveLocations = helperFunctions.saveLocations;
+const fetchAPI = helperFunctions.fetchAPI;
 
 function Location(city, geoData) {
   this.search_query = city;
@@ -12,7 +12,6 @@ function Location(city, geoData) {
   this.latitude = geoData.results[0].geometry.location.lat;
   this.longitude = geoData.results[0].geometry.location.lng;
 }
-
 
 exports.locationHandler = async function locationHandler(req, res) {
   const city = req.query.data;
@@ -26,6 +25,6 @@ exports.locationHandler = async function locationHandler(req, res) {
       res.status(200).send(location);
     }
   } catch (error) {
-    console.log('Sorry, something went wrong', req, res);
+    console.log('Sorry, something went wrong', error);
   }
 };

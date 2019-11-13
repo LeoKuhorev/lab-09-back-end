@@ -9,29 +9,23 @@ const cors = require('cors');
 const path = require('path');
 
 // Bringing in modules
-const SQL = require(path.join(__dirname, 'modules', 'functions.js'));
+const helperFunctions = require(path.join(__dirname, 'modules', 'functions.js'));
 
-const checkWeather = SQL.checkWeather;
-const saveWeather = SQL.saveWeather;
-const clearWeather = SQL.clearWeather;
+const checkEvent = helperFunctions.checkEvent;
+const saveEvents = helperFunctions.saveEvents;
+const clearEvent = helperFunctions.clearEvent;
 
-const checkEvent = SQL.checkEvent;
-const saveEvents = SQL.saveEvents;
-const clearEvent = SQL.clearEvent;
-
-const fetchAPI = SQL.fetchAPI;
-
+const fetchAPI = helperFunctions.fetchAPI;
+const dbHandler = helperFunctions.dbHandler;
 
 const Location = require(path.join(__dirname, 'modules', 'location.js'));
 const locationHandler = Location.locationHandler;
 
-const Event = require(path.join(__dirname, 'modules', 'events.js'));
 const Weather = require(path.join(__dirname, 'modules', 'weather.js'));
-const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
+const weatherHandler = Weather.weatherHandler;
 
-// Database connection
-const pg = require('pg');
-const client = new pg.Client(process.env.DATABASE_URL);
+const Event = require(path.join(__dirname, 'modules', 'events.js'));
+const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
 
 // Application setup
 const PORT = process.env.PORT || 3000;
@@ -52,25 +46,7 @@ app.get('*', (req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
-// Helper functions
-
 // Event Handlers
-
-async function weatherHandler(req, res) {
-  try {
-    let weatherFound = await checkWeather(req.query.data.search_query, res);
-    if(!weatherFound) {
-      const url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${req.query.data.latitude},${req.query.data.longitude}`;
-      const weatherData = await fetchAPI(url);
-      await clearWeather(req.query.data.search_query);
-      const forecasts = weatherData.daily.data.map(element => new Weather(element));
-      forecasts.forEach(forecast => saveWeather(forecast, req.query.data.search_query));
-      res.status(200).send(forecasts);
-    }
-  } catch (error) {
-    errorHandler('Sorry, something went wrong', req, res);
-  }
-}
 
 async function trailHandler(req, res) {
   try {
@@ -99,14 +75,6 @@ async function eventsHandler(req, res) {
   catch (error) {
     errorHandler('Sorry, something went wrong', req, res);
   }
-}
-
-function dbHandler(req, res) {
-  let SQL = 'SELECT * FROM locations';
-  client.query(SQL)
-    .then( results => {
-      res.status(200).json(results.rows);
-    });
 }
 
 function errorHandler(error, req, res) {

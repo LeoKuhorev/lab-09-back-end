@@ -123,3 +123,12 @@ exports.fetchAPI = async function fetchAPI(url) {
     console.log('API call couldn\'t be completed, error status:', error.status);
   }
 };
+
+// dbHandler callback
+exports.dbHandler = function dbHandler(req, res) {
+  let SQL = 'SELECT * FROM locations';
+  client.query(SQL)
+    .then( results => {
+      res.status(200).json(results.rows);
+    });
+};
