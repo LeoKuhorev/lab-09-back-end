@@ -133,9 +133,14 @@ exports.clearTable = async function clearTable(table, city) {
 };
 
 // Fetch any API data
-exports.fetchAPI = async function fetchAPI(url) {
+exports.fetchAPI = async function fetchAPI(url, api) {
   try {
-    const apiData = await superagent.get(url);
+    let apiData;
+    if(api) {
+      apiData = await superagent.get(url).set(api);
+    } else {
+      apiData = await superagent.get(url);
+    }
     return apiData.body;
   } catch (error) {
     console.log('API call couldn\'t be completed, error status:', error.status);

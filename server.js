@@ -24,6 +24,9 @@ const eventsHandler = Event.eventsHandler;
 const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
 const trailHandler = Trail.trailHandler;
 
+const Yelp = require(path.join(__dirname, 'modules', 'yelp.js'));
+const yelpHandler = Yelp.yelpHandler;
+
 // Application setup
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -38,6 +41,7 @@ app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/trails', trailHandler);
 app.get('/events', eventsHandler);
+app.get('/yelp', yelpHandler);
 app.get('/db', dbHandler);
 app.get('*', (req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
