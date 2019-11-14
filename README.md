@@ -1,6 +1,6 @@
 # City Explorer Backend
 
-**Author**: Leo Kuhorev, Noah Rhodes, Ehsan Ghafari, Tammy Ip
+**Author**: Leo Kuhorev, Noah Rhodes, Ehsan Ghafari, Tammy Ip, Val Sobol
 
 **Version**: 1.4
 
@@ -27,7 +27,7 @@ It has been deployed to https://cf301-city-explorer.herokuapp.com/.
 
 11-11-2019 - SQL database added for Geo, Weather and Events.
 
-11-14-2019 - 
+11-14-2019 - Movies and Yelp added.
 
 
 
@@ -35,35 +35,35 @@ It has been deployed to https://cf301-city-explorer.herokuapp.com/.
 
 Number and name of feature: Add Movies API
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 1 hr
 
-Start time: _____
+Start time: 6:30 PM
 
-Finish time: _____
+Finish time: 7:15 PM
 
-Actual time needed to complete: _____
+Actual time needed to complete: 45 min
 
 
 Number and name of feature: Add Yelp API
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 45 min
 
-Start time: _____
+Start time: 7:15 PM
 
-Finish time: _____
+Finish time: 8:15 PM
 
-Actual time needed to complete: _____
+Actual time needed to complete: 1 hr
 
 
 Number and name of feature: Modularize your code
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 1 hr
 
-Start time: _____
+Start time: 4 PM
 
-Finish time: _____
+Finish time: 6 PM
 
-Actual time needed to complete: _____
+Actual time needed to complete: 2 hrs
 
 
 
