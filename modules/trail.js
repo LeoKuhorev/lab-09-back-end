@@ -2,10 +2,11 @@
 
 const path = require('path');
 const helperFunctions = require(path.join(__dirname, 'functions.js'));
-const fetchAPI = helperFunctions.fetchAPI;
 const checkTrail = helperFunctions.checkTrail;
 const saveTrails = helperFunctions.saveTrails;
 const clearTable = helperFunctions.clearTable;
+
+const fetchAPI = helperFunctions.fetchAPI;
 
 function Trail(object) {
   this.name = object.name;
