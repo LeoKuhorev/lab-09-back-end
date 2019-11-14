@@ -64,6 +64,18 @@ exports.checkEvent = async function checkEvent(city, res) {
   }
 };
 
+exports.checkTrail = async function checkTrail(city, res) {
+  const SQL = 'SELECT name, location, length, stars, star_votes, summary, trail_url, conditions, condition_date, condition_time, time_saved FROM trails JOIN locations ON trails.location_id = locations.id WHERE locations.search_query = $1';
+  try {
+    const trail = await checkDB(SQL, city, (60 * 24 * 7));
+    if(trail) {
+      res.status(200).send(trail);
+      return true;
+    }
+  } catch (error) {
+    console.log('Sorry, something went wrong', error);
+  }
+};
 
 // Saving location into database
 exports.saveLocations = async function saveLocations(object) {
@@ -102,15 +114,21 @@ exports.saveEvents = async function saveEvents(event, city) {
   }
 };
 
-exports.clearWeather = async function clearWeather(city) {
-  console.log('deleteing rows for ', city);
-  let SQL = 'DELETE FROM weather WHERE location_id = (SELECT id FROM locations WHERE search_query LIKE $1)';
-  await client.query(SQL, [city]);
+exports.saveTrails = async function saveTrails(trail, city) {
+  let SQL = 'INSERT INTO trails (name, location, length, stars, star_votes, summary, trail_url, conditions, condition_date, condition_time, time_saved, location_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, (SELECT id FROM locations WHERE search_query LIKE $12))';
+  let timeSaved = Date.now();
+  let safeValues = [trail.name, trail.location, trail.length, trail.stars, trail.star_votes, trail.summary, trail.trail_url, trail.conditions, trail.condition_date, trail.condition_time, timeSaved, city];
+  try {
+    await client.query(SQL, safeValues);
+    console.log('Saving trail for', city);
+  } catch (error) {
+    console.log('Trail couldn\'t be saved', error);
+  }
 };
 
-exports.clearEvent = async function clearEvent(city) {
+exports.clearTable = async function clearTable(table, city) {
   console.log('deleteing rows for ', city);
-  let SQL = 'DELETE FROM events WHERE location_id = (SELECT id FROM locations WHERE search_query LIKE $1)';
+  let SQL = `DELETE FROM ${table} WHERE location_id = (SELECT id FROM locations WHERE search_query LIKE $1)`;
   await client.query(SQL, [city]);
 };
 

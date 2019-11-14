@@ -4,7 +4,7 @@ const path = require('path');
 const helperFunctions = require(path.join(__dirname, 'functions.js'));
 const checkEvent = helperFunctions.checkEvent;
 const saveEvents = helperFunctions.saveEvents;
-const clearEvent = helperFunctions.clearEvent;
+const clearTable = helperFunctions.clearTable;
 
 const fetchAPI = helperFunctions.fetchAPI;
 
@@ -22,7 +22,7 @@ exports.eventsHandler = async function eventsHandler(req, res) {
     if(!eventFound) {
       const url = `https://www.eventbriteapi.com/v3/events/search/?location.longitude=${req.query.data.longitude}&location.latitude=${req.query.data.latitude}&expand=venue&token=${process.env.EVENTBRITE_API_KEY}`;
       const eventsData = await fetchAPI(url);
-      await clearEvent(req.query.data.search_query);
+      await clearTable('events', req.query.data.search_query);
       const events = eventsData.events.map(element => new Event(element));
       events.forEach(event => saveEvents(event, req.query.data.search_query));
       res.status(200).send(events);
