@@ -24,6 +24,9 @@ const eventsHandler = Event.eventsHandler;
 const Trail = require(path.join(__dirname, 'modules', 'trail.js'));
 const trailHandler = Trail.trailHandler;
 
+const Movie = require(path.join(__dirname, 'modules', 'movies.js'));
+const movieHandler = Movie.movieHandler;
+
 const Yelp = require(path.join(__dirname, 'modules', 'yelp.js'));
 const yelpHandler = Yelp.yelpHandler;
 
@@ -41,6 +44,7 @@ app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/trails', trailHandler);
 app.get('/events', eventsHandler);
+app.get('/movies', movieHandler);
 app.get('/yelp', yelpHandler);
 app.get('/db', dbHandler);
 app.get('*', (req, res) => {
