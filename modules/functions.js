@@ -77,6 +77,32 @@ exports.checkTrail = async function checkTrail(city, res) {
   }
 };
 
+exports.checkMovie = async function checkMovie(city, res) {
+  const SQL = 'SELECT title, overview, average_votes, total_votes, image_url, popularity, released_on, time_saved FROM movies JOIN locations ON movies.location_id = locations.id WHERE locations.search_query = $1';
+  try {
+    const movie = await checkDB(SQL, city, (60 * 24 * 7));
+    if(movie) {
+      res.status(200).send(movie);
+      return true;
+    }
+  } catch (error) {
+    console.log('Sorry, something went wrong', error);
+  }
+};
+
+exports.checkYelp = async function checkYelp(city, res) {
+  const SQL = 'SELECT name, image_url, price, rating, url, time_saved FROM yelp JOIN locations ON yelp.location_id = locations.id WHERE locations.search_query = $1';
+  try {
+    const business = await checkDB(SQL, city, (60 * 24 * 7));
+    if(business) {
+      res.status(200).send(business);
+      return true;
+    }
+  } catch (error) {
+    console.log('Sorry, something went wrong', error);
+  }
+};
+
 // Saving location into database
 exports.saveLocations = async function saveLocations(object) {
   let SQL = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id';
@@ -125,6 +151,31 @@ exports.saveTrails = async function saveTrails(trail, city) {
     console.log('Trail couldn\'t be saved', error);
   }
 };
+
+exports.saveMovies = async function saveMovies(movie, city) {
+  let SQL = 'INSERT INTO movies (title, overview, average_votes, total_votes, image_url, popularity, released_on, time_saved, location_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (SELECT id FROM locations WHERE search_query LIKE $9))';
+  let timeSaved = Date.now();
+  let safeValues = [movie.title, movie.overview, movie.average_votes, movie.total_votes, movie.image_url, movie.popularity, movie.released_on, timeSaved, city];
+  try {
+    await client.query(SQL, safeValues);
+    console.log('Saving movie for', city);
+  } catch (error) {
+    console.log('Movie couldn\'t be saved', error);
+  }
+};
+
+exports.saveYelp = async function saveYelp(business, city) {
+  let SQL = 'INSERT INTO yelp (name, image_url, price, rating, url, time_saved, location_id) VALUES ($1, $2, $3, $4, $5, $6, (SELECT id FROM locations WHERE search_query LIKE $7))';
+  let timeSaved = Date.now();
+  let safeValues = [business.name, business.image_url, business.price, business.rating, business.url, timeSaved, city];
+  try {
+    await client.query(SQL, safeValues);
+    console.log('Saving business for', city);
+  } catch (error) {
+    console.log('Business couldn\'t be saved', error);
+  }
+};
+
 
 exports.clearTable = async function clearTable(table, city) {
   console.log('deleteing rows for ', city);

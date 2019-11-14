@@ -2,6 +2,9 @@
 
 const path = require('path');
 const helperFunctions = require(path.join(__dirname, 'functions.js'));
+const checkMovie = helperFunctions.checkMovie;
+const saveMovies = helperFunctions.saveMovies;
+const clearTable = helperFunctions.clearTable;
 
 const fetchAPI = helperFunctions.fetchAPI;
 
@@ -18,16 +21,15 @@ function Movie(movie) {
 
 exports.movieHandler = async function movieHandler(req, res) {
   try {
-    // let weatherFound = await checkWeather(req.query.data.search_query, res);
-    // if(!weatherFound) {
-    const url = `https://api.themoviedb.org/3/search/movie?query=${req.query.data.search_query}&api_key=${process.env.MOVIE_API_KEY}`;
-    const moviesData = await fetchAPI(url);
-    // await clearTable('weather', req.query.data.search_query);
-    const movies = moviesData.results.map(element => new Movie(element));
-    // forecasts.forEach(forecast => saveWeather(forecast, req.query.data.search_query));
-    console.log(movies);
-    res.status(200).send(movies);
-    // }
+    let movieFound = await checkMovie(req.query.data.search_query, res);
+    if(!movieFound) {
+      const url = `https://api.themoviedb.org/3/search/movie?query=${req.query.data.search_query}&api_key=${process.env.MOVIE_API_KEY}`;
+      const moviesData = await fetchAPI(url);
+      await clearTable('movies', req.query.data.search_query);
+      const movies = moviesData.results.map(element => new Movie(element));
+      movies.forEach(movie => saveMovies(movie, req.query.data.search_query));
+      res.status(200).send(movies);
+    }
   } catch (error) {
     console.log('Sorry, something went wrong', error);
   }
